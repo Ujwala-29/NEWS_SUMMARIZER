@@ -3,3 +3,6 @@ transformers
 newspaper3k
 nltk
 lxml
+beautifulsoup4
+requests
+tqdm

@@ -1,5 +1,3 @@
-# app.py
-
 import streamlit as st
 from newspaper import Article
 from transformers import pipeline
@@ -11,22 +9,22 @@ nltk.download('punkt')
 st.set_page_config(page_title="🧠 News Summarizer", layout="wide")
 st.title("🗞️ Hugging Face News Summarizer")
 
-# Summarizer pipeline (only load once)
+# Load summarizer once
 @st.cache_resource
 def load_summarizer():
     return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 summarizer = load_summarizer()
 
-# Option: URL or Raw Text
+# Input method
 option = st.radio("Choose input method:", ["🔗 Enter URL", "📝 Paste Article Text"])
-
 article_text = ""
+summary = ""
 
-# URL Method
+# URL input
 if option == "🔗 Enter URL":
     url = st.text_input("Enter the News Article URL:")
-    if url and st.button("Fetch & Summarize"):
+    if st.button("Fetch Article"):
         try:
             article = Article(url)
             article.download()
@@ -34,25 +32,20 @@ if option == "🔗 Enter URL":
             article_text = article.text
 
             st.subheader("📝 Original Article")
-            st.write(article_text[:1000] + "...")
-
+            st.write(article_text[:1000] + "..." if len(article_text) > 1000 else article_text)
         except Exception as e:
             st.error(f"⚠️ Failed to load article: {str(e)}")
 
-# Text Method
+# Text input
 elif option == "📝 Paste Article Text":
     article_text = st.text_area("Paste the full article text below:")
-    if article_text and st.button("Summarize"):
-        st.subheader("📝 Original Article")
-        st.write(article_text[:1000] + "...")
 
-# Summarization (if article_text exists)
+# Summarize
 if article_text and st.button("🔍 Get Summary"):
     try:
         with st.spinner("Summarizing..."):
             summary = summarizer(article_text[:1024], max_length=150, min_length=40, do_sample=False)
-            st.subheader("📌 Summary")
-            st.success(summary[0]['summary_text'])
+        st.subheader("📌 Summary")
+        st.success(summary[0]['summary_text'])
     except Exception as e:
         st.error(f"⚠️ Summarization failed: {str(e)}")
-

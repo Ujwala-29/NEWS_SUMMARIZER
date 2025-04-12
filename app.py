@@ -3,6 +3,7 @@ from newspaper import Article
 from transformers import pipeline
 import nltk
 
+# Download NLTK punkt for text processing
 nltk.download('punkt')
 
 # Page Config
@@ -40,11 +41,15 @@ if option == "🔗 Enter URL":
 elif option == "📝 Paste Article Text":
     article_text = st.text_area("Paste the full article text below:")
 
+# Length sliders for summary
+max_length = st.slider("Max Length of Summary", 50, 300, 150)
+min_length = st.slider("Min Length of Summary", 30, 100, 40)
+
 # Summarize
 if article_text and st.button("🔍 Get Summary"):
     try:
         with st.spinner("Summarizing..."):
-            summary = summarizer(article_text[:1024], max_length=150, min_length=40, do_sample=False)
+            summary = summarizer(article_text[:1024], max_length=max_length, min_length=min_length, do_sample=False)
         st.subheader("📌 Summary")
         st.success(summary[0]['summary_text'])
     except Exception as e:

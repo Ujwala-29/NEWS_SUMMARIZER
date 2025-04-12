@@ -2,7 +2,8 @@ streamlit
 transformers
 newspaper3k
 nltk
-lxml
+lxml[html_clean]
 beautifulsoup4
 requests
 tqdm
+
